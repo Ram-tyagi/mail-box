@@ -4,11 +4,16 @@ import classess from "./Auth.module.css";
 import { useRef, useState } from "react";
 import Alert from "react-bootstrap/Alert";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import creadentailAction from "../Store/credential";
+
 
 function Auth() {
   const email = useRef();
   const pass = useRef();
   const confirmpass = useRef();
+
+  const dispatch = useDispatch();
   const [errEmptyform, seterrEmptyform] = useState(false);
   const [errpassNotMatch, seterrpassNotMatch] = useState(false);
   const [errAuth, seterrAuth] = useState(false);
@@ -18,11 +23,13 @@ function Auth() {
     e.preventDefault();
     let emailval = email.current.value;
     let passval = pass.current.value;
-    let confirmpassval = confirmpass.current.value;
-    if (passval !== confirmpassval) {
-      seterrpassNotMatch(true);
-    } else {
-      seterrpassNotMatch(false);
+    if (togglesignup) {
+        let confirmpassval = confirmpass.current.value;
+        if (passval !== confirmpassval) {
+          seterrpassNotMatch(true);
+        } else {
+          seterrpassNotMatch(false);
+        }
     }
     if (emailval.length === 0 || passval.length <= 5) {
       seterrEmptyform(true);
@@ -95,14 +102,16 @@ function Auth() {
             <Form.Label>Password</Form.Label>
             <Form.Control type="password" placeholder="Password" ref={pass} />
           </Form.Group>
-          <Form.Group className="mb-3" controlId="formConfirmPassword">
-            <Form.Label>Confirm Password</Form.Label>
-            <Form.Control
-              type="password"
-              placeholder="Password"
-              ref={confirmpass}
-            />
-          </Form.Group>
+          {togglesignup ? (
+            <Form.Group className="mb-3" controlId="formConfirmPassword">
+              <Form.Label>Confirm Password</Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="Password"
+                ref={confirmpass}
+              />
+            </Form.Group>
+          ) : null}
           <Button variant="primary" type="submit">
             {togglesignup ? "Sign Up" : "Login"}
           </Button>
