@@ -10,6 +10,7 @@ import axios from "axios";
 const Home = () => {
   let email = useSelector((state) => state.credential.email);
   const [text, setText] = useState("");
+  const [sender, setSender] = useState("");
   function GetTextformEditor() {
     const plainText = extractPlainTextFromHTML(text);
     storeEmail(plainText);
@@ -21,11 +22,15 @@ const Home = () => {
   }
   async function storeEmail(text) {
     email = email.replace(/[@.]/g, "");
+    const obj = {
+        email: text,
+        sender: sender,
+      };
     try {
       let response = await axios.post(
         `https://mailbox-database-2d55d-default-rtdb.firebaseio.com/${email}/data.json`,
         {
-          mail: text,
+         obj,
         },
         {
           headers: {
@@ -59,7 +64,21 @@ const Home = () => {
             </small>
             <small className="text-email2">Cc/Bcc</small>
 
-            <small className="text-email mt-3">Test mail</small>
+            <small className="text-email mt-3">
+              <textarea
+                id="plainText"
+                style={{
+                  border: "none",
+                  outline: "none",
+                  height: "20px",
+                  width: "100%",
+                  resize: "none",
+                }}
+                onChange={(e) => {
+                  setSender(e.target.value);
+                }}
+              ></textarea>
+            </small>
 
             <div>
               <SunEditor
