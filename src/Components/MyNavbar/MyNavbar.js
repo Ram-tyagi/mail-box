@@ -3,7 +3,7 @@ import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import Button from "react-bootstrap/Button";
 import { useSelector, useDispatch } from "react-redux";
-import { creadentailAction } from "../../store/credential";
+import { creadentailAction } from "../Store/credential";
 import { useNavigate } from "react-router-dom";
 function Mynavbar() {
   const dispatch = useDispatch();
