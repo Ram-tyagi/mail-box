@@ -6,6 +6,7 @@ import Alert from "react-bootstrap/Alert";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import creadentailAction from "../Store/credential";
+import { useNavigate } from "react-router-dom";
 
 
 function Auth() {
@@ -14,6 +15,7 @@ function Auth() {
   const confirmpass = useRef();
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [errEmptyform, seterrEmptyform] = useState(false);
   const [errpassNotMatch, seterrpassNotMatch] = useState(false);
   const [errAuth, seterrAuth] = useState(false);
@@ -69,21 +71,28 @@ function Auth() {
         seterrAuth(true);
         seterrAuthmsg("invalid Credential");
       } else {
-        console.log("user successfully logged in");
-        seterrAuth(false);
+        const obj = {
+            token: response.data.idToken,
+            email: response.data.email,
+          };
+          localStorage.setItem("token", JSON.stringify(obj));
+          dispatch(creadentailAction.setToken(response.data.idToken));
+          navigate("/");
+          console.log("user successfully logged in");
+          seterrAuth(false);
+        }
+      } catch (err) {
+        const errmsg = "invalid Credential";
+        seterrAuth(true);
+        seterrAuthmsg(errmsg);
+        console.log("Error :", err);
       }
-    } catch (err) {
-      const errmsg = "invalid Credential";
-      seterrAuth(true);
-      seterrAuthmsg(errmsg);
-      console.log("Error :", err);
     }
-  }
-  function togglesignupHandler() {
-    setTogglesignup((prev) => {
-      return !prev;
-    });
-  }
+    function togglesignupHandler() {
+      setTogglesignup((prev) => {
+        return !prev;
+      });
+    }
   return (
     <>
       {errpassNotMatch && (
