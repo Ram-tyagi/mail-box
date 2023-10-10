@@ -4,11 +4,14 @@ import SunEditor from "suneditor-react";
 import "suneditor/dist/css/suneditor.min.css";
 import "./Home.css";
 
-import { useSelector } from "react-redux";
+import { useSelector,useDispatch } from "react-redux";
 import axios from "axios";
+import { UIshowaction } from "../Store/UIshow";
+
 
 const Home = () => {
   let email = useSelector((state) => state.credential.email);
+  const dispatch = useDispatch();
   const [text, setText] = useState("");
   const [sender, setSender] = useState("");
   function GetTextformEditor() {
@@ -25,6 +28,7 @@ const Home = () => {
     const obj = {
         email: text,
         sender: sender,
+        showstar:true,
       };
     try {
       let response = await axios.post(
@@ -40,6 +44,8 @@ const Home = () => {
       );
       if (response.status === 200) {
         console.log(response.data);
+        const sendobj = { id: response.data.name, showstar: true };
+        dispatch(UIshowaction.anothershowStar(sendobj));
       } else {
         console.log("Error:", response.data, response.status);
       }

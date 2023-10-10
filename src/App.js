@@ -5,6 +5,7 @@ import Mynavbar from './Components/MyNavbar/MyNavbar';
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Allmails from './Components/Allmails/Allmails';
+import SpecificMail from './Components/SpecificMail';
 function App() {
   const isloggedIn = useSelector((state) => state.credential.token);
   return (
@@ -15,6 +16,7 @@ function App() {
             <>
             <Route path="/" element={<Home />} />
             <Route path="/allmails" element={<Allmails />} />
+            <Route path="/allmails/:sender" element={<SpecificMail />} />
           </>
           ) : (
             <Route path="/auth" element={<Auth />} />
