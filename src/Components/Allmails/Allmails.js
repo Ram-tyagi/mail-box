@@ -1,16 +1,16 @@
-import axios from "axios";
-import { useEffect } from "react";
-import { useSelector,useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Table from "react-bootstrap/Table";
 import { useNavigate, Link } from "react-router-dom";
-import "./Allmails.css";
-import { getAllSendmails,getAllReceivedmails } from "../Store/UIshow";
 import { UIshowaction } from "../Store/UIshow";
-import Button from "react-bootstrap/Button";
 
+import Button from "react-bootstrap/Button";
+import axios from "axios";
+import "./Allmails.css";
+import useReceivedMails from "../customHooks/useRecievedMail";
+import useSentMails from "../customHooks/useSentMails";
 const Allmails = () => {
   let email = useSelector((state) => state.credential.email);
   let receivedmails = useSelector((state) => state.UIshow.receivedmails);
@@ -18,16 +18,9 @@ const Allmails = () => {
   let recievemsg = useSelector((state) => state.UIshow.togglereceivedmsg);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  useEffect(() => {
-    let mail = email.replace(/[@.]/g, "");
-    let linkreceived = `https://mailboxpost-85c54-default-rtdb.firebaseio.com/${mail}/send.json`;
-    let linkSend = `https://mailboxpost-85c54-default-rtdb.firebaseio.com/${mail}/allsendmail.json`;
-    dispatch(getAllReceivedmails(linkreceived));
-    setInterval(() => {
-      dispatch(getAllSendmails(linkSend));
-      console.log("called");
-    }, 2000);
-  }, [email, dispatch]);
+  useReceivedMails(email);
+  useSentMails(email);
+
   function showrecieveItems() {
     dispatch(UIshowaction.receivedMailHandler(true));
   }
@@ -72,15 +65,17 @@ const Allmails = () => {
       } else {
         link = `https://mailbox-database-2d55d-default-rtdb.firebaseio.com/${mail}/allsendmail/${item.id}.json`;
       }
-      let response = await axios.put(link,
-      {
-        obj,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
+      let response = await axios.put(
+        link,
+        {
+          obj,
         },
-      } );
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (response.status === 200) {
         console.log(response.data);
       } else {
@@ -89,9 +84,7 @@ const Allmails = () => {
     } catch (err) {
       console.log("Error is", err);
     }
-   
   }
-  
   async function deleteMail(id) {
     if (recievemsg) {
       const copyAllmails = [...receivedmails];
@@ -107,6 +100,7 @@ const Allmails = () => {
       console.log("hidestar", getMail);
       dispatch(UIshowaction.HidestarSend(getMail));
     }
+
     let mail = email.replace(/[@.]/g, "");
     let link;
     if (recievemsg) {
@@ -115,8 +109,7 @@ const Allmails = () => {
       link = `https://mailbox-database-2d55d-default-rtdb.firebaseio.com/${mail}/allsendmail/${id}.json`;
     }
     try {
-      let response = await axios.delete(link)
-    
+      let response = await axios.delete(link);
       if (response.status === 200) {
         console.log(response.data);
       } else {
@@ -134,7 +127,7 @@ const Allmails = () => {
   }
   return (
     <>
-       <Container fluid>
+      <Container fluid>
         <Row className="mx-5">
           <Col md="3">
             <button
@@ -161,7 +154,6 @@ const Allmails = () => {
             <Table bordered hover>
               <thead>
                 <tr>
-                 
                   <th style={{ border: "none" }}>
                     {!recievemsg ? "Send To" : "Received By"}
                   </th>
@@ -177,7 +169,6 @@ const Allmails = () => {
                       ) : (
                         "  "
                       )}
-                     
                       {recievemsg ? item.sender : item.receiver}
                     </td>
                     <td
@@ -186,7 +177,6 @@ const Allmails = () => {
                       onClick={() => hideStar(item)}
                     >
                       <Link
-                       
                         to={`/allmails/${item.id}`}
                         style={{ color: "black", textDecoration: "none" }}
                       >
